@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>jQuery Gesture</title>
+	<script type="text/javascript" src="jquery.min.js"></script>
+	<script type="text/javascript" src="jquery.gesture.js"></script>
+	<script type="text/javascript" src="jquery.gesture.dev.js"></script>
+	<script type="text/javascript">
+		$( function () {
+			// @see .dev file for usage example
+			var gesture = $.gesture()               // gesture recognition instance
+				, board = gesture.board( 600, 400 ) // canvas to test gesture recognition
+					.on( 'selectstart.gesture contextmenu.gesture keydown.gesture', false )
+					.on( 'keyup.gesture', function () {
+						if ( event.which == 32 ) // space
+							return board.triggerHandler( 'recognize.gesture' );
+						if ( event.which == 13 ) // enter
+							return board.triggerHandler( 'learn.gesture' );
+						if ( event.which == 27 ) // escape
+							return board.triggerHandler( 'reset.gesture' );
+					} )
+					.on( 'recognize.gesture', function ( event ) {
+						if ( $.isEmptyObject( gesture.gestures ) )
+							return console.log( 'You should save a gesture before trying to recognize anything !' );
+						if ( ! event.result  )
+							return console.log( 'No result' );
+						console.log( event.result.name + ' gesture recognized (' + event.result.strokes + ' strokes), score: ' + Math.ceil( event.result.score ) );
+						board.triggerHandler( 'reset.gesture' );
+					} )
+					.on( 'learn.gesture', function ( event ) {
+						if ( ! event.result )
+							return;
+						console.log( 'Learned ' + event.result.name + ' gesture (' + event.result.strokes.length + ' strokes)' );
+						//console.log( 'Export of ' + name + ' gesture: { "' + name + '" :', gesture.export( name ), '}' );
+						board.triggerHandler( 'reset.gesture' );
+					} )
+					.on( 'save.gesture', function () {
+						console.log( 'Stroke #' + event.result.length  );
+					} )
+					.on( 'reset.gesture', function () {
+						console.log( 'Board & gesture recording cleared' );
+					} );
+			$( 'body' ).prepend( board );
+		} );
+	</script>
+	<style type="text/css">
+		html,
+		body {
+			margin     : 0;
+			height     : 100%;
+			text-align : center;
+		}
+		canvas {
+			display    : inline-block;
+			margin-top : 30px;
+		}
+	</style>
+</head>
+<body>
+	<p>Open a js console and play with the board ;)</p>
+</body>
+</html>
